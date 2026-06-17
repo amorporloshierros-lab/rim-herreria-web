@@ -22,7 +22,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;o
 /* PRELOADER */
 #pre{position:fixed;inset:0;z-index:10000;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.4rem;transition:opacity .7s ease,visibility .7s;}
 #pre.done{opacity:0;visibility:hidden;}
-#pre .pre-mark{font-family:'Fraunces',serif;font-size:2.4rem;letter-spacing:.1em;color:var(--texto);opacity:0;}
+#pre img.pre-mark{height:84px;width:auto;opacity:0;filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));}
 #pre .pre-seam{position:relative;width:min(440px,74vw);height:11px;background:linear-gradient(180deg,#3a4451,#1b2129);border-radius:3px;box-shadow:inset 0 1px 3px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.06);}
 #pre .pre-bead{position:absolute;left:0;top:0;height:100%;width:0;border-radius:3px;background:linear-gradient(180deg,#dde7f3,#8a98ab 55%,#586473);box-shadow:0 0 8px rgba(150,190,255,.4);}
 #pre .pre-bead::after{content:'';position:absolute;inset:0;border-radius:3px;background-image:repeating-linear-gradient(78deg,rgba(255,255,255,.5) 0 1.5px,rgba(80,92,107,.25) 1.5px,transparent 3px 7px);}
