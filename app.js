@@ -224,8 +224,17 @@ window.addEventListener('load',function(){
     }
     ScrollTrigger.create({trigger:pSpacer,start:'top top',end:'bottom bottom',scrub:true,pin:pStage,anticipatePin:1,onUpdate:function(self){ setActive(self.progress); }});
   } else if(pasos.length){
-    pasos.forEach(function(el){ el.classList.add('on'); var d=el.querySelector('.dot'); if(d) d.classList.add('welded'); });
-    if(pFill) pFill.style.width='100%';
+    // móvil: cada paso se enciende y se suelda al entrar en pantalla (activado por scroll)
+    var doneN=0;
+    pasos.forEach(function(el,i){
+      ScrollTrigger.create({trigger:el,start:'top 82%',once:true,onEnter:function(){
+        el.classList.add('on');
+        var d=el.querySelector('.dot');
+        if(d){ d.classList.add('welded'); var dr=d.getBoundingClientRect();
+          for(var j=0;j<14;j++) metalSpark(dr.left+dr.width/2, dr.top+dr.height/2+window.scrollY); }
+        doneN++; if(pFill) pFill.style.width=Math.round(doneN/pasos.length*100)+'%';
+      }});
+    });
   }
 
   gsap.to('#hero-video',{yPercent:18,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});

@@ -291,7 +291,6 @@ footer{background:var(--ink);position:relative;}
   .obra-panel img{height:230px;}
   .obras-stage .stage-head{top:clamp(3rem,9vh,6rem);}
   .proceso-stage{min-height:auto;padding:4rem 0;}
-  .paso{opacity:1;transform:none;}
   .chat-invite{width:210px;bottom:90px;}
   #chat-panel{height:min(560px,calc(100svh - 90px));}
 }
