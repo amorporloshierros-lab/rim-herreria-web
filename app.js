@@ -17,26 +17,57 @@ function spark(parent, x, y){
   setTimeout(function(){ s.remove(); }, dur);
 }
 
-/* PRELOADER — costura de soldadura: el arco recorre dejando cordón + chispas */
+/* PRELOADER — soldadura real en canvas: arco, pileta incandescente y lluvia de chispas */
 (function(){
-  var pre=document.getElementById('pre'), seam=document.getElementById('pre-seam'), bead=document.getElementById('pre-bead'), arc=document.getElementById('pre-arc'), mark=document.getElementById('pre-mark');
+  var pre=document.getElementById('pre'), cv=document.getElementById('pre-canvas'), mark=document.getElementById('pre-mark');
   function done(){ pre.classList.add('done'); }
-  if(reduce || !seam){ done(); return; }
+  if(reduce || !cv || !cv.getContext){ done(); return; }
   mark.style.transition='opacity .5s ease'; requestAnimationFrame(function(){ mark.style.opacity='1'; });
-  var t0=null, DUR=2200;
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height, midY=H/2;
+  var x0=46, x1=W-46, parts=[], t0=null, DUR=2700, fin=false;
+  function emit(x,y,n){
+    for(var i=0;i<n;i++){
+      var dir=Math.random()<0.5?-1:1, sp=1.4+Math.random()*5.4;
+      parts.push({x:x,y:y,vx:dir*sp*(0.4+Math.random()),vy:-(0.4+Math.random()*2.6),life:1,g:0.11+Math.random()*0.12,sz:0.6+Math.random()*1.8,hot:Math.random()});
+    }
+  }
   function frame(t){
     if(!t0) t0=t;
-    var p=Math.min(1,(t-t0)/DUR);
-    var jit=(Math.random()-0.5)*2;
-    bead.style.width=(p*100)+'%';
-    arc.style.left=(p*100)+'%';
-    arc.style.top='calc(50% + '+jit+'px)';
-    var r=seam.getBoundingClientRect();
-    var x=r.left+r.width*p, y=r.top+r.height/2;
-    var n=2+Math.floor(Math.random()*3);
-    for(var i=0;i<n;i++){ spark(pre, x, y); }
-    if(p<1){ requestAnimationFrame(frame); }
-    else { arc.style.opacity='0'; for(var k=0;k<16;k++){ spark(pre, x, y); } setTimeout(done,440); }
+    var p=Math.min(1,(t-t0)/DUR), ax=x0+(x1-x0)*p;
+    ctx.clearRect(0,0,W,H);
+    // placa de acero
+    var g=ctx.createLinearGradient(0,midY-10,0,midY+10);
+    g.addColorStop(0,'#3a4451'); g.addColorStop(1,'#191f27');
+    ctx.fillStyle=g; ctx.fillRect(x0-8,midY-10,(x1-x0)+16,20);
+    ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fillRect(x0-8,midY-10,(x1-x0)+16,2);
+    // cordón ya soldado: gris frío que se calienta cerca del arco
+    for(var bx=x0; bx<ax; bx+=3.5){
+      var heat=Math.max(0,1-(ax-bx)/80);
+      if(heat>0.04){ ctx.fillStyle='rgba(255,'+Math.round(150+95*heat)+','+Math.round(50+120*(1-heat))+','+(0.55+0.45*heat)+')'; }
+      else { ctx.fillStyle='rgba(150,165,188,.9)'; }
+      ctx.beginPath(); ctx.arc(bx, midY+(Math.random()-0.5)*1.4, 3.4, 0, 6.283); ctx.fill();
+    }
+    if(p<1) emit(ax, midY, 3+Math.floor(Math.random()*4));
+    // halo naranja
+    var og=ctx.createRadialGradient(ax,midY,0,ax,midY,46);
+    og.addColorStop(0,'rgba(255,165,60,.28)'); og.addColorStop(1,'rgba(255,165,60,0)');
+    ctx.fillStyle=og; ctx.beginPath(); ctx.arc(ax,midY,46,0,6.283); ctx.fill();
+    // arco azul-blanco flickering
+    var fl=0.65+Math.random()*0.35, R=24*fl;
+    var rg=ctx.createRadialGradient(ax,midY,0,ax,midY,R);
+    rg.addColorStop(0,'rgba(255,255,255,'+fl+')'); rg.addColorStop(.22,'rgba(226,241,255,.92)');
+    rg.addColorStop(.5,'rgba(124,192,255,.7)'); rg.addColorStop(.8,'rgba(43,127,214,.22)'); rg.addColorStop(1,'rgba(43,127,214,0)');
+    ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(ax,midY,R,0,6.283); ctx.fill();
+    // partículas (chispas con gravedad)
+    for(var i=parts.length-1;i>=0;i--){
+      var q=parts[i]; q.vy+=q.g; q.x+=q.vx; q.y+=q.vy; q.life-=0.017;
+      if(q.life<=0 || q.y>H+4){ parts.splice(i,1); continue; }
+      var c = q.hot>0.72?'rgba(255,255,255,':(q.hot>0.35?'rgba(255,212,120,':'rgba(255,138,40,');
+      ctx.strokeStyle=c+Math.max(0,q.life)+')'; ctx.lineWidth=q.sz; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(q.x-q.vx*1.6,q.y-q.vy*1.6); ctx.stroke();
+    }
+    if(p<1 || parts.length>0){ requestAnimationFrame(frame); }
+    if(p>=1 && !fin){ fin=true; emit(ax,midY,44); setTimeout(done,520); }
   }
   requestAnimationFrame(frame);
 })();

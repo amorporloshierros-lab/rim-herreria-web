@@ -263,3 +263,7 @@ footer{background:var(--ink);position:relative;}
   .proc-track i{width:100%!important;}
   #pre{display:none;}
 }
+
+#pre-canvas{width:min(560px,90vw);height:auto;display:block;}
+.obra-panel img{display:block;width:100%;height:340px;object-fit:cover;}
+@media(max-width:560px){.obra-panel img{height:250px;}}
