@@ -172,15 +172,26 @@ window.addEventListener('load',function(){
     });
   }
 
-  /* PROCESO — avanza por cada paso con el scroll (pineado) */
+  /* PROCESO — barra que SUELDA al scrollear (arco azul-blanco + chispas) */
   var pStage=document.getElementById('proceso-stage'), pSpacer=document.getElementById('proceso-spacer'), pFill=document.getElementById('proc-fill');
+  var pArc=document.getElementById('proc-arc'), pTrack=document.getElementById('proc-track');
   var pasos=gsap.utils.toArray('#proceso .paso');
   if(pStage && pasos.length){
     pSpacer.style.height=((pasos.length+1)*100)+'vh';
+    var lastP=0;
     function setActive(prog){
       if(pFill) pFill.style.width=(prog*100)+'%';
+      if(pArc) pArc.style.left=(prog*100)+'%';
       var idx=Math.min(pasos.length-1, Math.floor(prog*pasos.length+0.0001));
       pasos.forEach(function(el,i){ el.classList.toggle('on', i<=idx); });
+      var welding=prog>0.006 && prog<0.996;
+      if(pTrack) pTrack.classList.toggle('welding', welding);
+      if(welding && pTrack && Math.abs(prog-lastP)>0.004){
+        var r=pTrack.getBoundingClientRect();
+        var x=r.left+r.width*prog, y=r.top+r.height/2+window.scrollY;
+        for(var s=0;s<2;s++) spark(document.body, x, y);
+      }
+      lastP=prog;
     }
     setActive(0.02);
     ScrollTrigger.create({trigger:pSpacer,start:'top top',end:'bottom bottom',scrub:true,pin:pStage,anticipatePin:1,onUpdate:function(self){ setActive(self.progress); }});
