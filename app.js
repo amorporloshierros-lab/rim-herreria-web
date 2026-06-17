@@ -9,7 +9,7 @@ if (NEG.anosOficio && NEG.anosOficio !== "PENDIENTE") { document.getElementById(
 /* Genera chispas (detalle de firma) */
 function spark(parent, x, y){
   if(reduce) return;
-  var s=document.createElement('span'); s.className='spark'; s.style.left=x+'px'; s.style.top=y+'px';
+  var s=document.createElement('span'); s.className='spark'; s.style.left=x+'px'; s.style.top=y+'px'; if(Math.random()<0.35){ s.style.background='#dff0ff'; s.style.boxShadow='0 0 6px #7cc0ff'; }
   parent.appendChild(s);
   var ang=Math.random()*Math.PI*2, dist=20+Math.random()*40, dur=400+Math.random()*400;
   var dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist+20;
