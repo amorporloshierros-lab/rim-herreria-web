@@ -174,17 +174,20 @@ window.addEventListener('load',function(){
     gsap.to(man.querySelectorAll('.word'),{opacity:1,stagger:.08,ease:'none',scrollTrigger:{trigger:man,start:'top 75%',end:'bottom 60%',scrub:1}});
   }
 
-  /* OBRAS scroll superposición */
+  /* OBRAS scroll superposición (mismo efecto en desktop y móvil, distancias adaptadas) */
   var stage=document.getElementById('obras-stage');
   var spacer=document.getElementById('obras-spacer');
   var cards2=gsap.utils.toArray('.obra-card');
-  if(stage && cards2.length && !isMobile){
+  if(stage && cards2.length){
     spacer.style.height=((cards2.length+1)*100)+'vh';
-    var fromMap={ left:{x:-700,y:0,r:-8}, right:{x:700,y:0,r:8}, top:{x:0,y:-600,r:6}, bottom:{x:0,y:600,r:-6}, diag:{x:600,y:-400,r:10} };
+    var vw=window.innerWidth, vh=window.innerHeight;
+    var EX=isMobile?Math.max(360,vw*1.05):760, EY=isMobile?Math.max(360,vh*0.7):600;
+    var spX=isMobile?15:46, spY=isMobile?9:26;
+    var fromMap={ left:{x:-EX,y:0,r:-8}, right:{x:EX,y:0,r:8}, top:{x:0,y:-EY,r:6}, bottom:{x:0,y:EY,r:-6}, diag:{x:EX*0.85,y:-EY*0.7,r:10} };
     cards2.forEach(function(c){ var f=fromMap[c.dataset.from]||fromMap.left; gsap.set(c,{xPercent:-50,yPercent:-50,left:'50%',top:'52%',x:f.x,y:f.y,rotation:f.r,opacity:0}); });
     var tl=gsap.timeline({scrollTrigger:{trigger:spacer,start:'top top',end:'bottom bottom',scrub:1,pin:stage,anticipatePin:1}});
     cards2.forEach(function(c,idx){
-      var restX=(idx-(cards2.length-1)/2)*46, restY=(idx-(cards2.length-1)/2)*26, restR=(idx%2?1:-1)*(2+idx);
+      var restX=(idx-(cards2.length-1)/2)*spX, restY=(idx-(cards2.length-1)/2)*spY, restR=(idx%2?1:-1)*(2+idx);
       tl.to(c,{x:restX,y:restY,rotation:restR,opacity:1,duration:1,ease:'expo.out'}, idx*0.9);
     });
   }
