@@ -1,0 +1,61 @@
+<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="R.I.M Herrería">
+  <defs>
+    <linearGradient id="hexEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2A742"/><stop offset="1" stop-color="#C5710E"/>
+    </linearGradient>
+    <radialGradient id="beam" cx="50%" cy="0%" r="100%">
+      <stop offset="0" stop-color="#FFE6B0"/><stop offset="55%" stop-color="#F2A742"/><stop offset="100%" stop-color="#C5710E" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A4759"/><stop offset="1" stop-color="#1A2636"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Hexágono -->
+  <polygon points="110,8 196,58 196,162 110,212 24,162 24,58" fill="#0D1B2A" stroke="url(#hexEdge)" stroke-width="9" stroke-linejoin="round"/>
+  <polygon points="110,22 184,65 184,155 110,198 36,155 36,65" fill="none" stroke="#F2A742" stroke-width="2" opacity=".5"/>
+
+  <!-- Engranaje -->
+  <g fill="url(#steel)" stroke="#0A1420" stroke-width="1.5">
+    <g>
+      <circle cx="110" cy="104" r="62"/>
+    </g>
+  </g>
+  <g fill="#243245">
+    <g id="teeth">
+      <rect x="104" y="36" width="12" height="16" rx="2"/>
+    </g>
+  </g>
+  <!-- dientes del engranaje -->
+  <g fill="#2A3850" stroke="#0A1420" stroke-width="1">
+    <g transform="translate(110,104)">
+      <g><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(45)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(90)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(135)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(180)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(225)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(270)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+      <g transform="rotate(315)"><rect x="-6" y="-70" width="12" height="16" rx="2"/></g>
+    </g>
+  </g>
+  <circle cx="110" cy="104" r="58" fill="#16243A" stroke="#0A1420" stroke-width="2"/>
+  <circle cx="110" cy="104" r="50" fill="none" stroke="#34465c" stroke-width="2"/>
+
+  <!-- Haz de corte (plasma/láser) + chispas -->
+  <polygon points="110,46 96,128 124,128" fill="url(#beam)" opacity=".9"/>
+  <g fill="#FFE6B0">
+    <circle cx="104" cy="126" r="2.2"/><circle cx="116" cy="122" r="1.8"/><circle cx="110" cy="132" r="2.6"/>
+    <circle cx="98" cy="118" r="1.5"/><circle cx="122" cy="116" r="1.6"/><circle cx="112" cy="138" r="1.5"/>
+  </g>
+  <!-- Cabezal del torch -->
+  <g fill="#2A3850" stroke="#0A1420" stroke-width="1.5">
+    <rect x="100" y="40" width="20" height="10" rx="2"/>
+    <rect x="103" y="48" width="14" height="8" rx="1"/>
+    <polygon points="106,56 114,56 111,64 109,64"/>
+  </g>
+
+  <!-- Banda negra con R.I.M -->
+  <rect x="36" y="120" width="148" height="40" fill="#06090F" stroke="#F2A742" stroke-width="1.5" opacity=".96"/>
+  <text x="110" y="149" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="30" letter-spacing="2" fill="#ECE8E1">R.I.M</text>
+</svg>
