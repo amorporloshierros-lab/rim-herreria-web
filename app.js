@@ -17,6 +17,22 @@ function spark(parent, x, y){
   setTimeout(function(){ s.remove(); }, dur);
 }
 
+/* Chispa/esquirla con gravedad (soldadura del proceso) */
+function metalSpark(x,y){
+  if(reduce) return;
+  var s=document.createElement('span'); s.className='spark';
+  var big=Math.random()<0.22, sz=big?(2+Math.random()*2.4):(1+Math.random()*1.6);
+  s.style.left=x+'px'; s.style.top=y+'px'; s.style.width=sz+'px'; s.style.height=(big?sz*2.4:sz)+'px'; s.style.borderRadius=big?'1px':'50%';
+  var r=Math.random();
+  if(r<0.34){ s.style.background='#fff'; s.style.boxShadow='0 0 6px #cfe8ff'; }
+  else if(r<0.66){ s.style.background='#ffd27a'; s.style.boxShadow='0 0 7px #E8911C'; }
+  else { s.style.background='#ff8a28'; s.style.boxShadow='0 0 7px #E8911C'; }
+  document.body.appendChild(s);
+  var dx=(Math.random()-0.5)*150, peak=-(18+Math.random()*48), fall=46+Math.random()*100, dur=520+Math.random()*620;
+  s.animate([{transform:'translate(0,0)',opacity:1},{transform:'translate('+(dx*0.5)+'px,'+peak+'px)',opacity:1,offset:.4},{transform:'translate('+dx+'px,'+fall+'px)',opacity:0}],{duration:dur,easing:'cubic-bezier(.3,.1,.6,1)'});
+  setTimeout(function(){ s.remove(); }, dur);
+}
+
 /* PRELOADER — soldadura real en canvas: arco, pileta incandescente y lluvia de chispas */
 (function(){
   var pre=document.getElementById('pre'), cv=document.getElementById('pre-canvas'), mark=document.getElementById('pre-mark');
@@ -124,6 +140,7 @@ function revelarTodo(){
 window.addEventListener('load',function(){
   if(reduce || typeof gsap==='undefined'){ revelarTodo(); return; }
   gsap.registerPlugin(ScrollTrigger);
+  var isMobile=window.matchMedia('(max-width:760px)').matches;
 
   if(typeof Lenis!=='undefined'){
     var lenis=new Lenis({duration:1.2,easing:function(t){return Math.min(1,1.001-Math.pow(2,-10*t));}});
@@ -161,7 +178,7 @@ window.addEventListener('load',function(){
   var stage=document.getElementById('obras-stage');
   var spacer=document.getElementById('obras-spacer');
   var cards2=gsap.utils.toArray('.obra-card');
-  if(stage && cards2.length){
+  if(stage && cards2.length && !isMobile){
     spacer.style.height=((cards2.length+1)*100)+'vh';
     var fromMap={ left:{x:-700,y:0,r:-8}, right:{x:700,y:0,r:8}, top:{x:0,y:-600,r:6}, bottom:{x:0,y:600,r:-6}, diag:{x:600,y:-400,r:10} };
     cards2.forEach(function(c){ var f=fromMap[c.dataset.from]||fromMap.left; gsap.set(c,{xPercent:-50,yPercent:-50,left:'50%',top:'52%',x:f.x,y:f.y,rotation:f.r,opacity:0}); });
@@ -172,29 +189,40 @@ window.addEventListener('load',function(){
     });
   }
 
-  /* PROCESO — barra que SUELDA al scrollear (arco azul-blanco + chispas) */
+  /* PROCESO — barra que SUELDA al scrollear (arco + luz + chispas + esquirlas) */
   var pStage=document.getElementById('proceso-stage'), pSpacer=document.getElementById('proceso-spacer'), pFill=document.getElementById('proc-fill');
-  var pArc=document.getElementById('proc-arc'), pTrack=document.getElementById('proc-track');
+  var pArc=document.getElementById('proc-arc'), pTrack=document.getElementById('proc-track'), pLight=document.getElementById('proc-light');
   var pasos=gsap.utils.toArray('#proceso .paso');
-  if(pStage && pasos.length){
+  if(pStage && pasos.length && !isMobile){
     pSpacer.style.height=((pasos.length+1)*100)+'vh';
-    var lastP=0;
+    var lastP=0, weldedMax=-1;
     function setActive(prog){
       if(pFill) pFill.style.width=(prog*100)+'%';
       if(pArc) pArc.style.left=(prog*100)+'%';
+      if(pLight) pLight.style.left=(prog*100)+'%';
       var idx=Math.min(pasos.length-1, Math.floor(prog*pasos.length+0.0001));
       pasos.forEach(function(el,i){ el.classList.toggle('on', i<=idx); });
       var welding=prog>0.006 && prog<0.996;
       if(pTrack) pTrack.classList.toggle('welding', welding);
-      if(welding && pTrack && Math.abs(prog-lastP)>0.004){
-        var r=pTrack.getBoundingClientRect();
-        var x=r.left+r.width*prog, y=r.top+r.height/2+window.scrollY;
-        for(var s=0;s<2;s++) spark(document.body, x, y);
+      if(welding && pTrack && Math.abs(prog-lastP)>0.003){
+        var r=pTrack.getBoundingClientRect(), x=r.left+r.width*prog, y=r.top+r.height/2+window.scrollY;
+        var n=4+Math.floor(Math.random()*4); for(var s=0;s<n;s++) metalSpark(x,y);
+      }
+      if(idx>weldedMax){
+        for(var k=weldedMax+1;k<=idx;k++){ var dot=pasos[k]&&pasos[k].querySelector('.dot');
+          if(dot){ dot.classList.add('welded'); var dr=dot.getBoundingClientRect();
+            for(var j=0;j<16;j++) metalSpark(dr.left+dr.width/2, dr.top+dr.height/2+window.scrollY); } }
+        weldedMax=idx;
+      } else if(idx<weldedMax){
+        for(var k2=idx+1;k2<pasos.length;k2++){ var d2=pasos[k2]&&pasos[k2].querySelector('.dot'); if(d2) d2.classList.remove('welded'); }
+        weldedMax=idx;
       }
       lastP=prog;
     }
-    setActive(0.02);
     ScrollTrigger.create({trigger:pSpacer,start:'top top',end:'bottom bottom',scrub:true,pin:pStage,anticipatePin:1,onUpdate:function(self){ setActive(self.progress); }});
+  } else if(pasos.length){
+    pasos.forEach(function(el){ el.classList.add('on'); var d=el.querySelector('.dot'); if(d) d.classList.add('welded'); });
+    if(pFill) pFill.style.width='100%';
   }
 
   gsap.to('#hero-video',{yPercent:18,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
@@ -207,13 +235,15 @@ window.addEventListener('load',function(){
   var body=document.getElementById('chat-body'),input=document.getElementById('chat-input'),send=document.getElementById('chat-send');
   var chips=document.getElementById('chat-chips'),actWa=document.getElementById('act-wa'),actLead=document.getElementById('act-lead'),actPresu=document.getElementById('act-presu');
   var leadForm=document.getElementById('lead-form'),leadBack=document.getElementById('lead-back'),inputWrap=document.getElementById('chat-input-wrap');
+  var invite=document.getElementById('chat-invite'), invX=document.getElementById('chat-invite-x');
   var history=[];
   var SYSTEM="Sos el asistente de R.I.M Herrería en General, el taller de Mario Barrios en Pilar, Escobar, Nordelta, Tigre y zona norte de Buenos Aires. Atendés de forma cordial y profesional, en español, sin emojis y sin vueltas. Conocés los servicios: pérgolas y techados, portones corredizos y de dos hojas, estructuras metálicas y trabajos industriales/civiles, rejas de seguridad, escaleras y barandas, puertas y parrillas a medida. No das precios cerrados: explicás que cada trabajo se presupuesta a medida y que conviene dejar los datos o escribir por WhatsApp al +54 9 348 4567900. Invitás de forma profesional a dejar el contacto o pedir presupuesto. Respuestas breves (2-4 frases).";
   var ENDPOINT=(CFG.chatbot&&CFG.chatbot.endpoint)||"";
 
-  function open(){ panel.classList.add('open'); fab.style.display='none'; if(!body.children.length) greet(); setTimeout(function(){input.focus();},300); }
+  function open(){ panel.classList.add('open'); fab.style.display='none'; if(invite) invite.classList.remove('show'); if(!body.children.length) greet(); setTimeout(function(){input.focus();},300); }
   function shut(){ panel.classList.remove('open'); fab.style.display='flex'; }
   fab.addEventListener('click',open); close.addEventListener('click',shut);
+  if(invite){ setTimeout(function(){ if(!panel.classList.contains('open')) invite.classList.add('show'); }, 4200); invite.addEventListener('click',function(e){ if(e.target===invX) return; invite.classList.remove('show'); open(); }); invX.addEventListener('click',function(e){ e.stopPropagation(); invite.classList.remove('show'); }); }
   function bubble(t,w){ var d=document.createElement('div'); d.className='msg '+w; d.textContent=t; body.appendChild(d); body.scrollTop=body.scrollHeight; return d; }
   function typing(){ var d=document.createElement('div'); d.className='msg bot typing'; d.innerHTML='<span></span><span></span><span></span>'; body.appendChild(d); body.scrollTop=body.scrollHeight; return d; }
   function greet(){ setTimeout(function(){ bubble("Buenas, soy el asistente de R.I.M Herrería. Contame qué necesitás —un portón, una pérgola, rejas, una estructura— y te oriento. Si querés, dejás tus datos y Mario te pasa un presupuesto.","bot"); },350); }
