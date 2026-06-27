@@ -249,7 +249,7 @@ window.addEventListener('load',function(){
   var leadForm=document.getElementById('lead-form'),leadBack=document.getElementById('lead-back'),inputWrap=document.getElementById('chat-input-wrap');
   var invite=document.getElementById('chat-invite'), invX=document.getElementById('chat-invite-x');
   var history=[];
-  var SYSTEM="Sos el asistente de R.I.M Herrería en General, el taller de Mario Barrios en Pilar, Escobar, Nordelta, Tigre y zona norte de Buenos Aires. Atendés de forma cordial y profesional, en español, sin emojis y sin vueltas. Conocés los servicios: pérgolas y techados, portones corredizos y de dos hojas, estructuras metálicas y trabajos industriales/civiles, rejas de seguridad, escaleras y barandas, puertas y parrillas a medida. No das precios cerrados: explicás que cada trabajo se presupuesta a medida y que conviene dejar los datos o escribir por WhatsApp al +54 9 348 4567900. Invitás de forma profesional a dejar el contacto o pedir presupuesto. Respuestas breves (2-4 frases).";
+  var SYSTEM="Sos un asesor de R.I.M Herrería en General (el taller de Mario Barrios), herrería a medida en Pilar, Escobar, Nordelta, Tigre y zona norte. Atendés el chat de la web. Hablás como una persona real, con onda; NUNCA digas que sos un bot ni una IA. Tono: cercano, claro y profesional, tuteo argentino, sin vueltas, sin emojis. QUE HACEMOS: fabricamos, instalamos y reparamos todo en hierro y acero, a medida y con garantia: portones (corredizos y de dos hojas), rejas de seguridad, pergolas y techados, escaleras y barandas, puertas, parrillas, estructuras metalicas y trabajos industriales/civiles. DIFERENCIAL: trabajo prolijo, a medida, materiales de primera y garantia; tomamos la medida en el lugar y pasamos un presupuesto claro. TU MISION: que la persona deje sus datos o coordine un PRESUPUESTO SIN CARGO; no cierres precios por chat. TECNICA: mensajes CORTOS y humanos (1-3 lineas); 1-2 preguntas para entender que necesita y avanza, no interrogues; la zona/distancia nunca es un filtro. OBJECIONES (reencuadra, nunca cierres la puerta): cuanto sale/es caro -> el presupuesto es sin cargo y se ve segun la medida, pago a convenir; lo pienso -> sin apuro, ofrece pasar el presupuesto igual asi lo tiene listo; no te conozco -> invita a ver los trabajos en la seccion Obras y ofrece el presupuesto sin compromiso. CIERRE: cuando muestre interes, ofrece coordinar el presupuesto sin cargo y pedile nombre, zona y que necesita, o invitalo a tocar el boton Dejar mis datos o escribir por WhatsApp al +54 9 348 4567900. Cierre asumido: propone, no preguntes querés. Respuestas breves (2-4 frases).";
   var ENDPOINT=(CFG.chatbot&&CFG.chatbot.endpoint)||"";
 
   function open(){ panel.classList.add('open'); fab.style.display='none'; if(invite) invite.classList.remove('show'); if(!body.children.length) greet(); setTimeout(function(){input.focus();},300); }
@@ -258,22 +258,24 @@ window.addEventListener('load',function(){
   if(invite){ setTimeout(function(){ if(!panel.classList.contains('open')) invite.classList.add('show'); }, 4200); invite.addEventListener('click',function(e){ if(e.target===invX) return; invite.classList.remove('show'); open(); }); invX.addEventListener('click',function(e){ e.stopPropagation(); invite.classList.remove('show'); }); }
   function bubble(t,w){ var d=document.createElement('div'); d.className='msg '+w; d.textContent=t; body.appendChild(d); body.scrollTop=body.scrollHeight; return d; }
   function typing(){ var d=document.createElement('div'); d.className='msg bot typing'; d.innerHTML='<span></span><span></span><span></span>'; body.appendChild(d); body.scrollTop=body.scrollHeight; return d; }
-  function greet(){ setTimeout(function(){ bubble("Buenas, soy el asistente de R.I.M Herrería. Contame qué necesitás —un portón, una pérgola, rejas, una estructura— y te oriento. Si querés, dejás tus datos y Mario te pasa un presupuesto.","bot"); },350); }
+  function greet(){ setTimeout(function(){ bubble("¡Buenas! Soy de R.I.M Herrería. Contame qué estás necesitando —un portón, una reja, una pérgola, una estructura— y te oriento. El presupuesto es sin cargo.","bot"); },350); }
 
   function localReply(q){
     var t=q.toLowerCase(); function has(){ for(var i=0;i<arguments.length;i++){ if(t.indexOf(arguments[i])>=0) return true; } return false; }
-    if(has('precio','sale','cuesta','cuanto','cuánto','presupuesto','vale')) return "Cada trabajo se presupuesta a medida según las medidas y el material, así que no manejamos un precio fijo. Si me deja sus datos o nos escribe por WhatsApp, Mario le pasa un número sin compromiso.";
-    if(has('porton','portón','corrediz','dos hojas')) return "Sí, hacemos portones corredizos y de dos hojas, a medida y bien robustos. Se pueden dejar preparados para automatizar. ¿Le preparamos un presupuesto?";
-    if(has('pergola','pérgola','techado','quincho','galeria','galería')) return "Las pérgolas y techados metálicos son uno de nuestros fuertes, resistentes a la intemperie. Cuénteme el espacio y lo presupuestamos.";
-    if(has('estructura','tinglado','entrepiso','industrial','obra','plano','civil')) return "Sí, realizamos estructuras metálicas, entrepisos y trabajos industriales y civiles. Trabajamos con planos. Si tiene el proyecto, lo cotizamos.";
-    if(has('reja','seguridad')) return "Hacemos rejas de seguridad para ventanas, puertas y frentes, con diseño firme y prolijo. Indíqueme medidas aproximadas o deje sus datos y lo vemos.";
-    if(has('escalera','baranda','pasamano')) return "Realizamos escaleras y barandas a medida, para interior y exterior. ¿Es para una casa, un local o una obra?";
-    if(has('parrilla','asador')) return "Construimos parrillas y asadores a medida del quincho. Indíqueme el tamaño que tiene en mente.";
-    if(has('zona','pilar','escobar','nordelta','tigre','donde','dónde','llegan','viajan')) return "Trabajamos en Pilar, Escobar, Nordelta, Tigre y toda la zona norte de Buenos Aires. Indíqueme su localidad y le confirmo.";
-    if(has('tiempo','demora','tarda','plazo','cuando','cuándo')) return "El plazo depende del tipo de trabajo y la carga del taller; se lo confirmamos al pasar el presupuesto. ¿Desea que lo contactemos?";
-    if(has('hola','buenas','buen dia','buen día','que tal','qué tal')) return "Buenas, ¿en qué lo puedo ayudar? Cuénteme qué trabajo de herrería necesita.";
-    if(has('gracias','genial','dale','perfecto')) return "A las órdenes. Si le resulta cómodo, deje sus datos aquí abajo o escríbanos por WhatsApp y seguimos por ahí.";
-    return "Con gusto lo ayudo. Para orientarlo mejor, cuénteme qué trabajo necesita (portón, pérgola, rejas, escalera, estructura...) o deje sus datos y Mario lo contacta.";
+    if(has('precio','sale','cuesta','cuanto','cuánto','presupuesto','vale','barato','caro')) return "El presupuesto es sin cargo y lo vemos según tu medida; el pago lo arreglamos. Pasame tu nombre y zona, o tocá 'Dejar mis datos' y te cotizamos.";
+    if(has('porton','portón','corrediz','dos hojas')) return "Sí, hacemos portones corredizos y de dos hojas, a medida y bien robustos, listos para automatizar. ¿En qué zona es? Te paso un presupuesto sin cargo.";
+    if(has('pergola','pérgola','techado','quincho','galeria','galería')) return "Las pérgolas y techados son uno de nuestros fuertes, aguantan la intemperie. Contame el espacio aprox. y te cotizamos sin cargo.";
+    if(has('estructura','tinglado','entrepiso','industrial','obra','plano','civil')) return "Sí, hacemos estructuras, entrepisos y trabajos industriales y civiles; trabajamos con planos. Si tenés el proyecto, lo vemos y te presupuestamos.";
+    if(has('reja','seguridad')) return "Hacemos rejas de seguridad firmes y prolijas para ventanas, puertas y frentes. Pasame medidas aprox. o tus datos y lo vemos.";
+    if(has('escalera','baranda','pasamano')) return "Hacemos escaleras y barandas a medida, interior o exterior. ¿Es para casa, local u obra? Te paso un presupuesto.";
+    if(has('parrilla','asador')) return "Armamos parrillas y asadores a medida del quincho. ¿Qué tamaño tenés en mente?";
+    if(has('zona','pilar','escobar','nordelta','tigre','donde','dónde','llegan','viajan')) return "Trabajamos en Pilar, Escobar, Nordelta, Tigre y toda la zona norte. ¿De qué localidad sos? Coordinamos el presupuesto sin cargo.";
+    if(has('tiempo','demora','tarda','plazo','cuando','cuándo')) return "El plazo depende del trabajo, te lo confirmamos al pasar el presupuesto. Dejá tus datos y te contactamos.";
+    if(has('sos un bot','sos bot','sos real','sos una persona','sos humano','esto es automatico','automático','con quien','con quién')) return "Soy el asesor de R.I.M, te atiendo yo. Contame qué trabajo necesitás y lo vemos.";
+    if(has('hola','buenas','buen dia','buen día','que tal','qué tal','holis')) return "¡Buenas! ¿Qué trabajo de herrería estás necesitando? Te oriento y, si querés, te paso un presupuesto sin cargo.";
+    if(has('gracias','genial','dale','perfecto','joya')) return "Dale, cuando quieras. Tocá 'Dejar mis datos' o escribinos por WhatsApp y seguimos por ahí.";
+    if(has('ver','foto','trabajo','muestra','hicieron')) return "Mirá la sección Obras del sitio, ahí están varios trabajos reales. ¿Cuál se parece a lo que necesitás? Te paso un presupuesto sin cargo.";
+    return "Contame qué necesitás (portón, reja, pérgola, escalera, estructura...) y te oriento. El presupuesto es sin cargo: dejá tus datos o escribinos por WhatsApp.";
   }
   function respond(q){
     var t=typing();
@@ -284,7 +286,10 @@ window.addEventListener('load',function(){
       .catch(function(){ t.remove(); bubble(localReply(q),'bot'); });
     } else { setTimeout(function(){ t.remove(); bubble(localReply(q),'bot'); }, 600+Math.random()*500); }
   }
-  function userSend(q){ if(!q.trim())return; bubble(q,'user'); input.value=''; respond(q); }
+  var leadOffered=false;
+  function userSend(q){ if(!q.trim())return; bubble(q,'user'); input.value=''; respond(q);
+    if(!leadOffered && /(quiero (un )?presupuesto|coordin|me contact|dejar (mis )?datos|cotiz|pas(a|á)me (un )?presu)/i.test(q)){ leadOffered=true; setTimeout(function(){ if(!leadForm.classList.contains('show')) showLead(true); }, 1500); }
+  }
   send.addEventListener('click',function(){ userSend(input.value); });
   input.addEventListener('keydown',function(e){ if(e.key==='Enter') userSend(input.value); });
   chips.addEventListener('click',function(e){ var b=e.target.closest('.chip'); if(b) userSend(b.dataset.q); });
