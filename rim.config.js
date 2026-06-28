@@ -18,7 +18,7 @@ window.RIM_CONFIG = {
     whatsapp: "5493484567900",
     instagram: "rim.herreria",
     zona: "Pilar, Escobar, Nordelta, Tigre y zona norte",
-    anosOficio: "PENDIENTE",      // se muestra en el hero
+    anosOficio: "+25",      // se muestra en el hero
   },
 
   /* ── RONDA 1: Dirección general ✓ ── */
